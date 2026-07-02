@@ -453,26 +453,7 @@
             }
 
             function exportarCSV() {
-                fetch('/historial/')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data || data.length === 0) {
-                            alert('No hay operaciones para exportar.');
-                            return;
-                        }
-                        const opNombres = { suma: '+', resta: '-', multiplicar: '*', dividir: '/' };
-                        const headers = 'Fecha,Operando A,Operación,Operando B,Resultado\n';
-                        const rows = data.map(item =>
-                            `"${item.fecha}",${item.a},"${opNombres[item.operacion] || item.operacion}",${item.b},${item.resultado}`
-                        ).join('\n');
-                        const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.download = 'historial_calculadora.csv';
-                        link.click();
-                        URL.revokeObjectURL(link.href);
-                    })
-                    .catch(() => alert('Error al exportar historial.'));
+                window.location.href = '/exportar-csv/';
             }
 
             // Event listeners

@@ -1,9 +1,10 @@
 import json
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from calculator import suma, resta, multiplicar, dividir
 from .historial import agregar_operacion, cargar_historial, limpiar_historial
+from .exportar import generar_csv
 
 
 OPERACIONES = {
@@ -50,3 +51,10 @@ def historial(request):
         return JsonResponse({"mensaje": "Historial limpiado"})
     data = cargar_historial()
     return JsonResponse(data, safe=False)
+
+
+def exportar_csv(request):
+    csv_content = generar_csv()
+    response = HttpResponse(csv_content, content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="historial_calculadora.csv"'
+    return response
