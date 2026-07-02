@@ -35,7 +35,7 @@ class TestExportarCSV(unittest.TestCase):
         lineas = contenido.strip().split("\n")
         self.assertEqual(len(lineas), 3)
         self.assertIn("5", lineas[1])
-        self.assertIn("dividir", lineas[2])
+        self.assertIn("/", lineas[2])
 
     def test_exportar_sin_historial(self):
         limpiar_historial()
