@@ -4,4 +4,6 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("calculate/", views.calculate, name="calculate"),
+    path("historial/", views.historial, name="historial"),
+    path("exportar-csv/", views.exportar_csv, name="exportar_csv"),
 ]
