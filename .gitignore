@@ -1,3 +1,6 @@
 ent_cal/
 *.pyc
 __pycache__/
+calculator_app/historial.json
+.pytest_cache/
+*.egg-info/
