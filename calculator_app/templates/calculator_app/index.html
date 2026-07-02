@@ -133,6 +133,14 @@
             animation: pulse-ring 0.8s ease-out;
         }
 
+       @keyframes borderGlow {
+            0%, 100% { border-color: rgba(139, 92, 246, 0.3); }
+            50% { border-color: rgba(139, 92, 246, 0.8); }
+        }
+        .glass {
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+        
         .historial-item {
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             padding: 0.5rem 0.75rem;
