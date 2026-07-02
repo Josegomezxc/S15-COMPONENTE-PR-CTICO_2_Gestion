@@ -1,0 +1,42 @@
+import json
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from calculator import suma, resta, multiplicar, dividir
+
+
+OPERACIONES = {
+    "suma": suma,
+    "resta": resta,
+    "multiplicar": multiplicar,
+    "dividir": dividir,
+}
+
+
+def index(request):
+    return render(request, "calculator_app/index.html")
+
+
+@csrf_exempt
+def calculate(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Método no permitido"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        a = float(data["a"])
+        b = float(data["b"])
+        op = data["op"]
+    except (KeyError, ValueError, TypeError):
+        return JsonResponse({"error": "Datos inválidos"}, status=400)
+
+    func = OPERACIONES.get(op)
+    if not func:
+        return JsonResponse({"error": f"Operación '{op}' no válida"}, status=400)
+
+    try:
+        resultado = func(a, b)
+    except ValueError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"resultado": resultado})

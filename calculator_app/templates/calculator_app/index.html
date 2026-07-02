@@ -1,0 +1,421 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora Profesional</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn {
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(0.92);
+        }
+
+        .btn-op {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        .btn-op:hover {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .btn-num {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .btn-num:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-eq {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        .btn-eq:hover {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .btn-clear:hover {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+
+        .btn-fn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .btn-fn:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        .display-container {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #display {
+            min-height: 3rem;
+            word-break: break-all;
+            scrollbar-width: none;
+        }
+        #display::-webkit-scrollbar {
+            display: none;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-result {
+            animation: fadeSlide 0.25s ease-out;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(59, 130, 246, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        .pulse-eq:focus-visible {
+            animation: pulse-ring 0.8s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950/80 to-slate-950 flex items-center justify-center p-4">
+
+    <div class="glass rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] p-6 w-full max-w-[360px]">
+
+        <!-- Display -->
+        <div class="display-container rounded-2xl p-4 mb-5">
+            <div id="expression" class="text-sm font-mono text-indigo-300/60 h-5 text-right truncate">&nbsp;</div>
+            <div id="display" class="text-4xl font-light text-white text-right tracking-tight overflow-x-auto whitespace-nowrap animate-result">0</div>
+        </div>
+
+        <!-- Buttons Grid -->
+        <div class="grid grid-cols-4 gap-2.5">
+
+            <!-- Fila 1 -->
+            <button class="btn btn-clear col-span-2 rounded-xl py-3.5 text-sm font-semibold text-white shadow-lg shadow-red-500/20" data-action="clear">C</button>
+            <button class="btn btn-fn rounded-xl py-3.5 text-sm font-medium text-indigo-300" data-action="backspace">⌫</button>
+            <button class="btn btn-op rounded-xl py-3.5 text-xl font-bold text-white shadow-lg shadow-amber-500/20" data-action="op" data-value="dividir">÷</button>
+
+            <!-- Fila 2 -->
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="7">7</button>
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="8">8</button>
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="9">9</button>
+            <button class="btn btn-op rounded-xl py-3.5 text-xl font-bold text-white shadow-lg shadow-amber-500/20" data-action="op" data-value="multiplicar">×</button>
+
+            <!-- Fila 3 -->
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="4">4</button>
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="5">5</button>
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="6">6</button>
+            <button class="btn btn-op rounded-xl py-3.5 text-xl font-bold text-white shadow-lg shadow-amber-500/20" data-action="op" data-value="resta">−</button>
+
+            <!-- Fila 4 -->
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="1">1</button>
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="2">2</button>
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value="3">3</button>
+            <button class="btn btn-op rounded-xl py-3.5 text-xl font-bold text-white shadow-lg shadow-amber-500/20" data-action="op" data-value="suma">+</button>
+
+            <!-- Fila 5 -->
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white col-span-2" data-action="num" data-value="0">0</button>
+            <button class="btn btn-num rounded-xl py-3.5 text-lg font-medium text-white" data-action="num" data-value=".">.</button>
+            <button class="btn btn-eq rounded-xl py-3.5 text-xl font-bold text-white shadow-lg shadow-blue-500/30 pulse-eq" data-action="equals">=</button>
+
+        </div>
+
+        <!-- Status -->
+        <div class="mt-4 flex items-center justify-center gap-2 text-xs text-indigo-400/40">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/60"></span>
+            Conectado al backend Python
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const display = document.getElementById('display');
+            const expression = document.getElementById('expression');
+
+            let currentInput = '0';
+            let operator = null;
+            let firstOperand = null;
+            let waitingForSecond = false;
+            let justEvaluated = false;
+            let hasError = false;
+
+            function updateDisplay() {
+                if (currentInput.length > 14) {
+                    display.classList.remove('text-4xl');
+                    display.classList.add('text-2xl');
+                } else {
+                    display.classList.remove('text-2xl');
+                    display.classList.add('text-4xl');
+                }
+                let txt = currentInput;
+                if (hasError) {
+                    display.className = 'text-2xl text-red-400 text-right tracking-tight overflow-x-auto whitespace-nowrap';
+                } else {
+                    display.className = 'text-4xl font-light text-white text-right tracking-tight overflow-x-auto whitespace-nowrap animate-result';
+                }
+                display.textContent = txt || '0';
+            }
+
+            function updateExpression() {
+                if (operator && firstOperand !== null) {
+                    const opSymbols = { suma: '+', resta: '−', multiplicar: '×', dividir: '÷' };
+                    const sym = opSymbols[operator] || operator;
+                    expression.innerHTML = `${formatNum(firstOperand)} ${sym}`;
+                } else {
+                    expression.innerHTML = '&nbsp;';
+                }
+            }
+
+            function formatNum(n) {
+                if (n === null || n === undefined) return '0';
+                const str = String(n);
+                if (str.length > 12) return n.toExponential(4);
+                return str;
+            }
+
+            function inputDigit(digit) {
+                if (hasError) { clear(); }
+                if (justEvaluated) {
+                    clear();
+                    justEvaluated = false;
+                }
+                if (waitingForSecond) {
+                    currentInput = digit;
+                    waitingForSecond = false;
+                } else {
+                    if (currentInput === '0' && digit !== '.') {
+                        currentInput = digit;
+                    } else {
+                        if (currentInput.replace('-', '').replace('.', '').length >= 15) return;
+                        currentInput += digit;
+                    }
+                }
+                updateDisplay();
+                updateExpression();
+            }
+
+            function inputDecimal() {
+                if (hasError) { clear(); }
+                if (justEvaluated) {
+                    clear();
+                    justEvaluated = false;
+                }
+                if (waitingForSecond) {
+                    currentInput = '0.';
+                    waitingForSecond = false;
+                    updateDisplay();
+                    updateExpression();
+                    return;
+                }
+                if (!currentInput.includes('.')) {
+                    currentInput += '.';
+                }
+                updateDisplay();
+            }
+
+            function handleOperator(op) {
+                if (hasError) return;
+                const current = parseFloat(currentInput);
+                if (isNaN(current)) return;
+
+                if (operator && !waitingForSecond) {
+                    calculate();
+                    firstOperand = parseFloat(currentInput);
+                } else {
+                    firstOperand = current;
+                }
+
+                operator = op;
+                waitingForSecond = true;
+                justEvaluated = false;
+                updateExpression();
+            }
+
+            function calculate() {
+                if (operator === null || firstOperand === null) return;
+                const second = parseFloat(currentInput);
+                if (isNaN(second)) return;
+
+                const a = firstOperand;
+                const b = second;
+                const op = operator;
+
+                // Mostrar indicador de carga
+                display.textContent = '...';
+
+                fetch('/calculate/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ a, b, op })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.error) {
+                            hasError = true;
+                            currentInput = data.error;
+                            updateDisplay();
+                            operator = null;
+                            firstOperand = null;
+                            waitingForSecond = false;
+                            expression.innerHTML = '&nbsp;';
+                            return;
+                        }
+                        const result = data.resultado;
+                        const formatted = Number.isInteger(result) ? String(result) : String(parseFloat(result.toFixed(10)));
+                        currentInput = formatted;
+                        operator = null;
+                        firstOperand = null;
+                        waitingForSecond = false;
+                        justEvaluated = true;
+                        hasError = false;
+                        updateDisplay();
+                        expression.innerHTML = '&nbsp;';
+                    })
+                    .catch(err => {
+                        hasError = true;
+                        currentInput = 'Error de conexión';
+                        updateDisplay();
+                        operator = null;
+                        firstOperand = null;
+                        waitingForSecond = false;
+                        expression.innerHTML = '&nbsp;';
+                    });
+            }
+
+            function clear() {
+                currentInput = '0';
+                operator = null;
+                firstOperand = null;
+                waitingForSecond = false;
+                justEvaluated = false;
+                hasError = false;
+                display.className = 'text-4xl font-light text-white text-right tracking-tight overflow-x-auto whitespace-nowrap';
+                updateDisplay();
+                expression.innerHTML = '&nbsp;';
+            }
+
+            function backspace() {
+                if (hasError) { clear(); return; }
+                if (justEvaluated) { clear(); return; }
+                if (waitingForSecond) return;
+                if (currentInput.length <= 1 || (currentInput.length === 2 && currentInput.startsWith('-'))) {
+                    currentInput = '0';
+                } else {
+                    currentInput = currentInput.slice(0, -1);
+                }
+                updateDisplay();
+            }
+
+            function toggleSign() {
+                if (hasError || currentInput === '0') return;
+                if (justEvaluated) { justEvaluated = false; }
+                currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput;
+                updateDisplay();
+            }
+
+            // Event listeners
+            document.querySelectorAll('button[data-action]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const action = btn.dataset.action;
+
+                    switch (action) {
+                        case 'num':
+                            inputDigit(btn.dataset.value);
+                            break;
+                        case 'op':
+                            handleOperator(btn.dataset.value);
+                            break;
+                        case 'equals':
+                            if (operator && !waitingForSecond) calculate();
+                            break;
+                        case 'clear':
+                            clear();
+                            break;
+                        case 'backspace':
+                            backspace();
+                            break;
+                        case 'sign':
+                            toggleSign();
+                            break;
+                    }
+                });
+            });
+
+            // Keyboard support
+            document.addEventListener('keydown', (e) => {
+                const key = e.key;
+
+                if (key >= '0' && key <= '9') {
+                    inputDigit(key);
+                    e.preventDefault();
+                } else if (key === '.') {
+                    inputDecimal();
+                    e.preventDefault();
+                } else if (key === '+') {
+                    handleOperator('suma');
+                    e.preventDefault();
+                } else if (key === '-') {
+                    handleOperator('resta');
+                    e.preventDefault();
+                } else if (key === '*') {
+                    handleOperator('multiplicar');
+                    e.preventDefault();
+                } else if (key === '/') {
+                    handleOperator('dividir');
+                    e.preventDefault();
+                } else if (key === 'Enter' || key === '=') {
+                    if (operator && !waitingForSecond) calculate();
+                    e.preventDefault();
+                } else if (key === 'Backspace') {
+                    backspace();
+                    e.preventDefault();
+                } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                    clear();
+                    e.preventDefault();
+                }
+            });
+
+            // Inicializar
+            updateDisplay();
+            expression.innerHTML = '&nbsp;';
+        })();
+    </script>
+
+</body>
+</html>
