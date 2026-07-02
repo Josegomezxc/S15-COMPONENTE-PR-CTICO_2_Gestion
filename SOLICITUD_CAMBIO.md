@@ -57,5 +57,5 @@ Ambas fueron integradas a `develop` y posteriormente a `master` mediante pull re
 ## Seguimiento
 
 - **Commit inicial (v1)**: `66da046` — Calculadora básica funcional
-- **Commit final (v2)**: [completar después del merge]
-- **URL en producción**: [completar después del deploy]
+- **Commit final (v2)**: `3513250` — Calculadora con historial + exportación CSV + CI/CD
+- **URL en producción**: [completar después del deploy en Render]
