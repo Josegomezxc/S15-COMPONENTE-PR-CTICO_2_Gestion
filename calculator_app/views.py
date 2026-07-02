@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from calculator import suma, resta, multiplicar, dividir
+from .historial import agregar_operacion, cargar_historial, limpiar_historial
 
 
 OPERACIONES = {
@@ -39,4 +40,13 @@ def calculate(request):
     except ValueError as e:
         return JsonResponse({"error": str(e)}, status=400)
 
+    agregar_operacion(a, b, op, resultado)
     return JsonResponse({"resultado": resultado})
+
+
+def historial(request):
+    if request.method == "POST":
+        limpiar_historial()
+        return JsonResponse({"mensaje": "Historial limpiado"})
+    data = cargar_historial()
+    return JsonResponse(data, safe=False)
